@@ -141,6 +141,7 @@ class KnowledgeBase(object):
                     else:
                         #can't retract from kB cuz its supported by other facts/rules
                         print("Can't be retracted")
+                        return
                 else: #fact is asserted
                     for item in real_fact.supports_facts: #for each fact that was supported by the retracted fact
                         item1 = self._get_fact(item).supported_by #get the pairs
@@ -161,7 +162,7 @@ class KnowledgeBase(object):
                                 pair.remove(real_fact)
                         if (len(item1) == 0):
                             if not item.asserted:
-                                self.rules.remove(item)
+                                self.rule_retract(item)
 
                     self.facts.remove(real_fact)
 
@@ -176,6 +177,57 @@ class KnowledgeBase(object):
         else: #isnt a fact or rule, return
             print("not a fact or rule!")
             return
+
+    def rule_retract(self, rule):
+        """Retract a rule from the KB
+
+        Args:
+            rule (Rule) - Rule to be retracted
+
+        Returns:
+            None
+        """
+
+        if isinstance(rule, Rule): #if it is a rule
+            if rule not in self.rules: #check if the rule is in the KB
+                return #return if there's no fact to retract
+            else:
+                real_rule = self._get_rule(rule) # get the actual fact from kb
+               
+                if real_rule.supported_by:
+                    if real_rule.asserted:
+                        #asserted rule can't be removed
+                        return
+                    else:
+                        #can't retract from kB cuz its supported by other facts/rules
+                        print("Can't be retracted")
+                else: #rule is asserted
+                    for item in real_rule.supports_facts: #for each fact that was supported by the retracted rule
+                        item1 = self._get_fact(item).supported_by #get the pairs
+                        for pair in item1:
+                            if real_rule in pair:
+                                item1.remove(pair)
+                                pair.remove(real_rule)
+                        if (len(item1) == 0): #there's no other facts to support 
+                            if not item.asserted: #check if the item is asserted
+                                self.kb_retract(item)
+
+                    for item in real_rule.supports_rules: #for each rule that was supported by the retracted fact
+                        item1 = self._get_rule(item).supported_by
+
+                        for pair in item1:
+                            if real_rule in pair:
+                                item1.remove(pair)
+                                pair.remove(real_rule)
+                        if (len(item1) == 0):
+                            if not item.asserted:
+                                self.rule_retract(item)
+
+                    self.rules.remove(real_rule)
+
+                if (len(real_rule.supports_facts) == 0): #if it doesn't support any facts
+                    if not real_rule.asserted and real_rule.supported_by: #if it is inferred and has support
+                        return
 
 
 class InferenceEngine(object):

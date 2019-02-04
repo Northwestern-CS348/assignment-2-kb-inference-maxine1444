@@ -78,25 +78,25 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : bing")
     
-    # def test7(self):
-    #     """this student generated test ensures retract only removes facts and rules that are supported by
-    #     1 or less fact-rule pairs
-    #     """
-    #     r1 = read.parse_input("fact: (dresslike profHammond TonyStark)")
-    #     read1 = self.KB._get_fact(r1)
-    #     print(len(read1.supported_by))
-    #     print(read1.supports_rules)
-    #     print(' Retracting', r1)
-    #     self.KB.kb_retract(r1)
-    #     ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
-    #     print(' Asking if', ask1)
-    #     answer = self.KB.kb_ask(ask1)
-    #     self.assertEqual(str(answer[0]), "?X : profHammond")
-    #     ask2 = read.parse_input("fact: (resembles profHammond ?Y)")
-    #     print(' Asking if', ask2)
-    #     answer = self.KB.kb_ask(ask2)
-    #     print(answer)
-    #     self.assertFalse(answer)
+    def test7(self):
+        """this student generated test ensures retract only removes facts and rules that are supported by
+        1 or less fact-rule pairs
+        """
+        r1 = read.parse_input("fact: (dresslike profHammond TonyStark)")
+        read1 = self.KB._get_fact(r1)
+        print(len(read1.supported_by))
+        print(read1.supports_rules)
+        print(' Retracting', r1)
+        self.KB.kb_retract(r1)
+        ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
+        print(' Asking if', ask1)
+        answer = self.KB.kb_ask(ask1)
+        self.assertEqual(str(answer[0]), "?X : profHammond")
+        ask2 = read.parse_input("fact: (resembles profHammond ?Y)")
+        print(' Asking if', ask2)
+        answer = self.KB.kb_ask(ask2)
+        print(answer)
+        self.assertFalse(answer)
         
 
 def pprint_justification(answer):
