@@ -14,14 +14,14 @@ class KBTest(unittest.TestCase):
         for item in data:
             if isinstance(item, Fact) or isinstance(item, Rule):
                 self.KB.kb_assert(item)
-        
+    
     def test1(self):
         # Did the student code contain syntax errors, AttributeError, etc.
         ask1 = read.parse_input("fact: (motherof ada ?X)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : bing")
-
+    
     def test2(self):
         # Can fc_infer actually infer
         ask1 = read.parse_input("fact: (grandmotherof ada ?X)")
@@ -29,7 +29,7 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : felix")
         self.assertEqual(str(answer[1]), "?X : chen")
-
+       
     def test3(self):
         # Does retract actually retract things 
         r1 = read.parse_input("fact: (motherof ada bing)")
@@ -40,7 +40,7 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(len(answer), 1)
         self.assertEqual(str(answer[0]), "?X : felix")
-
+    
     def test4(self):
         # makes sure retract does not retract supported fact
         ask1 = read.parse_input("fact: (grandmotherof ada ?X)")
@@ -57,7 +57,7 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : felix")
         self.assertEqual(str(answer[1]), "?X : chen")
-        
+          
     def test5(self):
         # makes sure retract does not deal with rules
         ask1 = read.parse_input("fact: (parentof ada ?X)")
@@ -71,6 +71,33 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : bing")
 
+    def test6(self):
+        # infer a new fact from a rule with 1 lhs statement
+        ask1 = read.parse_input("fact: (parentof ada ?X)")
+        print(' Asking if', ask1)
+        answer = self.KB.kb_ask(ask1)
+        self.assertEqual(str(answer[0]), "?X : bing")
+    
+    # def test7(self):
+    #     """this student generated test ensures retract only removes facts and rules that are supported by
+    #     1 or less fact-rule pairs
+    #     """
+    #     r1 = read.parse_input("fact: (dresslike profHammond TonyStark)")
+    #     read1 = self.KB._get_fact(r1)
+    #     print(len(read1.supported_by))
+    #     print(read1.supports_rules)
+    #     print(' Retracting', r1)
+    #     self.KB.kb_retract(r1)
+    #     ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
+    #     print(' Asking if', ask1)
+    #     answer = self.KB.kb_ask(ask1)
+    #     self.assertEqual(str(answer[0]), "?X : profHammond")
+    #     ask2 = read.parse_input("fact: (resembles profHammond ?Y)")
+    #     print(' Asking if', ask2)
+    #     answer = self.KB.kb_ask(ask2)
+    #     print(answer)
+    #     self.assertFalse(answer)
+        
 
 def pprint_justification(answer):
     """Pretty prints (hence pprint) justifications for the answer.

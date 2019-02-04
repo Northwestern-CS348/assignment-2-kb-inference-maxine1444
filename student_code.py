@@ -127,8 +127,56 @@ class KnowledgeBase(object):
         """
         printv("Retracting {!r}", 0, verbose, [fact_or_rule])
         ####################################################
-        # Student code goes here
-        
+
+        if isinstance(fact_or_rule, Fact): #if it is a fact
+            if fact_or_rule not in self.facts: #check if the fact is in the KB
+                return #return if there's no fact to retract
+            else:
+                real_fact = self._get_fact(fact_or_rule) # get the actual fact from kb
+               
+                if real_fact.supported_by:
+                    if real_fact.asserted:
+                        real_fact.asserted = False
+                        return
+                    else:
+                        #can't retract from kB cuz its supported by other facts/rules
+                        print("Can't be retracted")
+                else: #fact is asserted
+                    for item in real_fact.supports_facts: #for each fact that was supported by the retracted fact
+                        item1 = self._get_fact(item).supported_by #get the pairs
+                        for pair in item1:
+                            if real_fact in pair:
+                                item1.remove(pair)
+                                pair.remove(real_fact)
+                        if (len(item1) == 0): #there's no other facts to support 
+                            if not item.asserted: #check if the item is asserted
+                                self.kb_retract(item)
+
+                    for item in real_fact.supports_rules: #for each rule that was supported by the retracted fact
+                        item1 = self._get_rule(item).supported_by
+
+                        for pair in item1:
+                            if real_fact in pair:
+                                item1.remove(pair)
+                                pair.remove(real_fact)
+                        if (len(item1) == 0):
+                            if not item.asserted:
+                                self.rules.remove(item)
+
+                    self.facts.remove(real_fact)
+
+                if (len(real_fact.supports_facts) == 0): #if it doesn't support any facts
+                    if not real_fact.asserted and real_fact.supported_by: #if it is inferred and has support
+                        return
+
+                
+        elif isinstance(fact_or_rule, Rule): # if it is a rule or anything else, don't change KB
+            print("Cannot retract a rule")
+            return
+        else: #isnt a fact or rule, return
+            print("not a fact or rule!")
+            return
+
 
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
@@ -146,3 +194,25 @@ class InferenceEngine(object):
             [fact.statement, rule.lhs, rule.rhs])
         ####################################################
         # Student code goes here
+        rule_len = len(rule.lhs) #length of the lhs of the rule
+
+        #check if the rule and fact have bindings
+        matches = match(rule.lhs[0], fact.statement)
+        if matches: 
+            if (rule_len == 1): #if there is only 1 lhs statement, we add a new fact
+                rf = []
+                rf.append([fact, rule])
+                new_fact = Fact(instantiate(rule.rhs, matches), rf) #make a new fact with the rule's lhs and the bindings
+                print(new_fact)
+                kb.kb_assert(new_fact) #add new fact to the KB
+                fact.supports_facts.append(new_fact)
+                rule.supports_facts.append(new_fact) #add the new fact to the support_facts list in both fact and rule
+            else: #if there are multiple lhs statements, rule-carrying
+                new_rule_list = [] #make a new list for the rule statements
+                new_rule_list.append([instantiate(item, matches) for item in rule.lhs[1:]])
+                new_rule_list.append(instantiate(rule.rhs, matches))
+                new_rule = Rule(new_rule_list, [[rule, fact]])
+                rule.supports_rules.append(new_rule)
+                fact.supports_rules.append(new_rule)
+                kb.kb_assert(new_rule)
+
