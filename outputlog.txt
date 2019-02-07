@@ -1,0 +1,20 @@
+TESTS WITH ERRORS 
+test14 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference/gradingtests.py", line 405, in test14
+    KB.kb_retract(fact2)
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference/student_code.py", line 147, in kb_retract
+    item1 = self._get_fact(item).supported_by #get the pairs
+AttributeError: 'NoneType' object has no attribute 'supported_by'
+
+-------------------------------
+TESTS FAILED  
+test5 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference/gradingtests.py", line 151, in test5
+    self.assertTrue(len(answer4) > 0)
+AssertionError: False is not true
+
+-------------------------------
+TESTS SKIPPED 
+-------------------------------
